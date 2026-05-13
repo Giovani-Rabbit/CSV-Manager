@@ -1,0 +1,13 @@
+1 - Entender como funciona a ferramenta de cli
+2 - Entender como funciona a ferramente de csv
+3 - Planejar oque a aplicacao vai fazer e quais funcoes vai precisar.
+
+
+Projeto:
+
+CLI
+
+    filter:
+        .exe pathFile --where age>10
+    find:
+        .exe pathfile --find giovani

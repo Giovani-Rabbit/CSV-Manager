@@ -28,8 +28,6 @@ impl Csv {
             .map(|col| col.trim().to_string())
             .collect();
 
-        println!("header: {:?}", headers);
-
         let lines: Vec<Vec<String>> = reader
             .records()
             .map(|r| {
@@ -60,25 +58,63 @@ impl Csv {
             .position(|c| c.eq_ignore_ascii_case(column))
     }
 
-    pub fn filter(&self, condition: &str) -> Result<(), String> {
+    pub fn filter(&self, condition: &str) -> Result<Vec<Vec<String>>, String> {
         let (column, operator, value) = extract_condition(condition)?;
+        let column_position = self.column_index(&column).unwrap();
+        let result: Vec<Vec<String>> = self
+            .lines
+            .iter()
+            .filter(|line| {
+                if let Some(field) = line.get(column_position) {
+                    compare_values(field, &operator, &value)
+                } else {
+                    false
+                }
+            })
+            .cloned()
+            .collect();
 
-        // preciso pegar o valor da coluna, verificar se o valor eh um numero
-        // e entao fazer a comparacao com os operadores.
-        println!("header: {:?}", self.headers);
-        println!("lines: {:?}", self.lines);
-
-        let column_value = self.column_index(&column).unwrap();
-
-        println!("nome da coluna: {column} | valor da colunas: {column_value}");
-
-        todo!()
+        Ok(result)
     }
 }
 
-fn compare_values(field: &str, operator: &str, value: f64) {}
+fn compare_values(field: &str, operator: &str, value: &str) -> bool {
+    match operator {
+        "==" => field.eq_ignore_ascii_case(value),
+        "!=" => !field.eq_ignore_ascii_case(value),
+        ">" => {
+            if let (Ok(a), Ok(b)) = (field.parse::<f64>(), value.parse::<f64>()) {
+                a > b
+            } else {
+                field > value
+            }
+        }
+        "<" => {
+            if let (Ok(a), Ok(b)) = (field.parse::<f64>(), value.parse::<f64>()) {
+                a < b
+            } else {
+                field < value
+            }
+        }
+        ">=" => {
+            if let (Ok(a), Ok(b)) = (field.parse::<f64>(), value.parse::<f64>()) {
+                a >= b
+            } else {
+                field >= value
+            }
+        }
+        "<=" => {
+            if let (Ok(a), Ok(b)) = (field.parse::<f64>(), value.parse::<f64>()) {
+                a <= b
+            } else {
+                field <= value
+            }
+        }
+        _ => false,
+    }
+}
 
-fn extract_condition(c: &str) -> Result<(String, String, f64), String> {
+fn extract_condition(c: &str) -> Result<(String, String, String), String> {
     let operators = [">=", "<=", "!=", "==", ">", "<"];
 
     for op in operators {
@@ -89,12 +125,9 @@ fn extract_condition(c: &str) -> Result<(String, String, f64), String> {
                 return Err(format!("column name is missing in '{c}'"));
             }
 
-            let value = c[idx + op.len()..].trim();
-            let int_value = value
-                .parse::<f64>()
-                .map_err(|_| format!("'{value}' is not a number"))?;
+            let value = c[idx + op.len()..].trim().to_string();
 
-            return Ok((column, op.to_string(), int_value));
+            return Ok((column, op.to_string(), value));
         }
     }
 

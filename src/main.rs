@@ -11,6 +11,10 @@ fn main() {
     let csv =
         Csv::new(&cli_params.path_file).unwrap_or_else(|err| panic!("Error on read csv: {err}"));
 
-    let response = csv.filter("Identifier>12").unwrap();
-    println!("{:?}", response);
+    if let Some(condition) = cli_params.filter {
+        match csv.filter(&condition) {
+            Ok(res) => println!("{:?}", res),
+            Err(e) => eprintln!("Erro: {e}"),
+        };
+    }
 }

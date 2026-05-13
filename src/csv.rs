@@ -60,7 +60,10 @@ impl Csv {
 
     pub fn filter(&self, condition: &str) -> Result<Vec<Vec<String>>, String> {
         let (column, operator, value) = extract_condition(condition)?;
-        let column_position = self.column_index(&column).unwrap();
+        let column_position = self
+            .column_index(&column)
+            .ok_or(format!("Column '{column}' not found"))?;
+
         let result: Vec<Vec<String>> = self
             .lines
             .iter()

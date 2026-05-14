@@ -7,6 +7,7 @@ use crate::{
 
 mod cli;
 mod csv;
+mod show;
 
 fn main() {
     let cli_params = Cli::parse();
@@ -22,7 +23,9 @@ fn main() {
     }
 
     match cli_params.action {
-        Some(Action::Show) => println!("Minhau"),
+        Some(Action::Show) => {
+            show::show_table(&csv.headers, &csv.lines, 2);
+        }
         Some(Action::Export) => println!("Testando"),
         None => {}
     }

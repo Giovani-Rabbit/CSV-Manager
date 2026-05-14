@@ -13,6 +13,6 @@ pub struct Cli {
 
 #[derive(Subcommand)]
 pub enum Action {
-    Info,
+    Show,
     Export,
 }

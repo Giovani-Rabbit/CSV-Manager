@@ -1,6 +1,9 @@
 use clap::Parser;
 
-use crate::{cli::Cli, csv::Csv};
+use crate::{
+    cli::{Action, Cli},
+    csv::Csv,
+};
 
 mod cli;
 mod csv;
@@ -16,5 +19,11 @@ fn main() {
             Ok(res) => println!("{:?}", res),
             Err(e) => eprintln!("Erro: {e}"),
         };
+    }
+
+    match cli_params.action {
+        Some(Action::Show) => println!("Minhau"),
+        Some(Action::Export) => println!("Testando"),
+        None => {}
     }
 }

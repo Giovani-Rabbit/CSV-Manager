@@ -1,6 +1,6 @@
 use colored::Colorize;
 
-pub fn show_table(headers: &[String], lines: &[Vec<String>], limit: usize) {
+pub fn table(headers: &[String], lines: &[Vec<String>], limit: usize) {
     let mut width: Vec<usize> = headers.iter().map(|h| h.len()).collect();
 
     for line in lines.iter().take(limit) {

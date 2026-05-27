@@ -1,57 +1,67 @@
 use colored::Colorize;
 
-pub fn table(headers: &[String], lines: &[Vec<String>], limit: usize) {
-    let mut width: Vec<usize> = headers.iter().map(|h| h.len()).collect();
+pub fn print_table(headers: &[String], records: &[Vec<String>], limit: usize) {
+    let spacing = column_widths(headers, records);
+    let formatted_headers = header_spacing(headers, &spacing);
 
-    for line in lines.iter().take(limit) {
-        for (i, campo) in line.iter().enumerate() {
-            if i < width.len() && campo.len() > width[i] {
-                width[i] = campo.len();
+    print_header(&formatted_headers);
+    print_line_separetor(&spacing);
+    print_records(&spacing, records, limit)
+}
+
+fn column_widths(headers: &[String], records: &[Vec<String>]) -> Vec<usize> {
+    let mut spaces: Vec<usize> = headers.iter().map(|h| h.len()).collect();
+
+    for line in records {
+        for (idx, column) in line.iter().enumerate() {
+            if idx < headers.len() && column.len() > spaces[idx] {
+                spaces[idx] = column.len();
             }
         }
     }
 
-    for l in width.iter_mut() {
-        if *l > 40 {
-            *l = 40;
-        }
-    }
+    return spaces;
+}
 
-    let table_headers: Vec<String> = headers
+fn header_spacing(headers: &[String], spacing: &[usize]) -> Vec<String> {
+    headers
         .iter()
         .enumerate()
-        .map(|(i, h)| format!("{:width$}", h, width = width.get(i).copied().unwrap_or(10)))
-        .collect();
-    println!("{}", table_headers.join(" | ").bold().cyan());
+        .map(|(idx, header)| {
+            format!(
+                "{:space_size$}",
+                header,
+                space_size = spacing.get(idx).copied().unwrap_or(10)
+            )
+        })
+        .collect()
+}
 
-    let table_line_separator: Vec<String> = width.iter().map(|l| "-".repeat(*l)).collect();
-    println!("{}", table_line_separator.join("-+-"));
+fn print_header(headers: &[String]) {
+    println!("{}", headers.join(" | ").bold().cyan())
+}
 
-    // Linhas de dados
-    let total_lines = lines.len();
-    for line in lines.iter().take(limit) {
-        let campos: Vec<String> = line
+fn print_line_separetor(spacing: &[usize]) {
+    let table_line_separator: Vec<String> = spacing.iter().map(|l| "-".repeat(*l)).collect();
+    println!("{}", table_line_separator.join("-+-"))
+}
+
+fn print_records(spacing: &[usize], records: &[Vec<String>], limit: usize) {
+    for record in records.iter().take(limit) {
+        let column: Vec<String> = record
             .iter()
             .enumerate()
-            .map(|(i, c)| {
-                let largura = width.get(i).copied().unwrap_or(10);
-                let truncado = if c.len() > largura {
-                    format!("{}...", &c[..largura - 3])
+            .map(|(idx, c)| {
+                let column_len = c.len();
+                let space = spacing.get(idx).unwrap_or(&column_len);
+                let truncated = if c.len() > *space {
+                    format!("{}...", &c[..space - 3])
                 } else {
                     c.clone()
                 };
-                format!("{:width$}", truncado, width = largura)
+                format!("{:space$}", truncated, space = space)
             })
             .collect();
-        println!("{}", campos.join(" | "));
-    }
-
-    if total_lines > limit {
-        println!(
-            "\n{} Showind {} of {} records.",
-            "INFO:".blue().bold(),
-            limit,
-            total_lines
-        );
+        println!("{}", column.join(" | "))
     }
 }

@@ -24,7 +24,7 @@ fn main() {
 
     match cli_params.action {
         Some(Action::Show) => {
-            show::table(&csv.headers, &csv.lines, 2);
+            show::print_table(&csv.headers, &csv.lines, 2);
         }
         Some(Action::Export) => println!("Testando"),
         None => {}

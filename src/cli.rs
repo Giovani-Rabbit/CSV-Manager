@@ -4,18 +4,19 @@ use clap::{Parser, Subcommand};
 pub struct Cli {
     pub path_file: String,
 
-    #[arg(long = "where")]
-    pub filter: Option<String>,
-
     #[command(subcommand)]
     pub action: Option<Action>,
 }
 
 #[derive(Subcommand)]
 pub enum Action {
-    Show {
-        // --limit or -l
+    Filter {
+        condition: String,
         #[arg(short = 'l', long)]
+        limit: Option<usize>,
+    },
+    Show {
+        #[arg(short = 'l', long)] // -l or --limit
         limit: Option<usize>,
     },
     Export,

@@ -17,14 +17,14 @@ fn main() {
 
     if let Some(condition) = cli_params.filter {
         match csv.filter(&condition) {
-            Ok(res) => println!("{:?}", res),
+            Ok(res) => show::print_table(&csv.headers, &res, None),
             Err(e) => eprintln!("Erro: {e}"),
         };
     }
 
     match cli_params.action {
-        Some(Action::Show) => {
-            show::print_table(&csv.headers, &csv.lines, 10);
+        Some(Action::Show { limit }) => {
+            show::print_table(&csv.headers, &csv.lines, limit);
         }
         Some(Action::Export) => println!("Testando"),
         None => {}

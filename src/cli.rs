@@ -13,6 +13,10 @@ pub struct Cli {
 
 #[derive(Subcommand)]
 pub enum Action {
-    Show,
+    Show {
+        // --limit or -l
+        #[arg(short = 'l', long)]
+        limit: Option<usize>,
+    },
     Export,
 }

@@ -1,6 +1,6 @@
 use colored::Colorize;
 
-pub fn print_table(headers: &[String], records: &[Vec<String>], limit: usize) {
+pub fn print_table(headers: &[String], records: &[Vec<String>], limit: Option<usize>) {
     let spacing = column_widths(headers, records);
     let formatted_headers = header_spacing(headers, &spacing);
 
@@ -53,10 +53,11 @@ fn format_line_separetor(spacing: &[usize]) -> String {
         .join("-+-")
 }
 
-fn format_records(spacing: &[usize], records: &[Vec<String>], limit: usize) -> String {
-    let mut columns: Vec<String> = Vec::with_capacity(limit);
+fn format_records(spacing: &[usize], records: &[Vec<String>], limit: Option<usize>) -> String {
+    let effective_limit = limit.unwrap_or(records.len());
+    let mut columns: Vec<String> = Vec::with_capacity(effective_limit);
 
-    for record in records.iter().take(limit) {
+    for record in records.iter().take(effective_limit) {
         let column: Vec<String> = record
             .iter()
             .enumerate()

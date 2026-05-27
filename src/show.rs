@@ -54,7 +54,7 @@ fn print_line_separetor(spacing: &[usize]) -> String {
 }
 
 fn print_records(spacing: &[usize], records: &[Vec<String>], limit: usize) -> String {
-    let mut columns: Vec<String> = Vec::new();
+    let mut columns: Vec<String> = Vec::with_capacity(limit);
 
     for record in records.iter().take(limit) {
         let column: Vec<String> = record

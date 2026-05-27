@@ -4,9 +4,13 @@ pub fn print_table(headers: &[String], records: &[Vec<String>], limit: usize) {
     let spacing = column_widths(headers, records);
     let formatted_headers = header_spacing(headers, &spacing);
 
-    print_header(&formatted_headers);
-    print_line_separetor(&spacing);
-    print_records(&spacing, records, limit)
+    let output = [
+        print_header(&formatted_headers),
+        print_line_separetor(&spacing),
+        print_records(&spacing, records, limit),
+    ];
+
+    println!("{}", output.join("\n"));
 }
 
 fn column_widths(headers: &[String], records: &[Vec<String>]) -> Vec<usize> {
@@ -37,16 +41,21 @@ fn header_spacing(headers: &[String], spacing: &[usize]) -> Vec<String> {
         .collect()
 }
 
-fn print_header(headers: &[String]) {
-    println!("{}", headers.join(" | ").bold().cyan())
+fn print_header(headers: &[String]) -> String {
+    headers.join(" | ").bold().cyan().to_string()
 }
 
-fn print_line_separetor(spacing: &[usize]) {
-    let table_line_separator: Vec<String> = spacing.iter().map(|l| "-".repeat(*l)).collect();
-    println!("{}", table_line_separator.join("-+-"))
+fn print_line_separetor(spacing: &[usize]) -> String {
+    spacing
+        .iter()
+        .map(|l| "-".repeat(*l))
+        .collect::<Vec<String>>()
+        .join("-+-")
 }
 
-fn print_records(spacing: &[usize], records: &[Vec<String>], limit: usize) {
+fn print_records(spacing: &[usize], records: &[Vec<String>], limit: usize) -> String {
+    let mut columns: Vec<String> = Vec::new();
+
     for record in records.iter().take(limit) {
         let column: Vec<String> = record
             .iter()
@@ -62,6 +71,9 @@ fn print_records(spacing: &[usize], records: &[Vec<String>], limit: usize) {
                 format!("{:space$}", truncated, space = space)
             })
             .collect();
-        println!("{}", column.join(" | "))
+
+        columns.push(column.join(" | "));
     }
+
+    return columns.join("\n");
 }

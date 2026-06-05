@@ -7,6 +7,7 @@ use crate::{
 
 mod cli;
 mod csv;
+mod json;
 mod show;
 
 fn main() {
@@ -23,7 +24,10 @@ fn main() {
         Some(Action::Show { limit }) => {
             show::print_table(&csv.headers, &csv.lines, limit);
         }
-        Some(Action::Export) => println!("Testando"),
+        Some(Action::Export) => {
+            let res: Vec<Vec<(String, String)>> = json::csv_to_json(&csv.headers, &csv.lines);
+            println!("{:?}", res);
+        }
         None => {}
     }
 }

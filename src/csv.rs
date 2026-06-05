@@ -4,7 +4,7 @@ use std::{
     io::{BufRead, BufReader},
 };
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Csv {
     pub headers: Vec<String>,
     pub lines: Vec<Vec<String>>,

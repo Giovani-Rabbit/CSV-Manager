@@ -10,17 +10,15 @@ mod csv;
 mod json;
 mod show;
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli_params = Cli::parse();
-
-    let csv =
-        Csv::new(&cli_params.path_file).unwrap_or_else(|err| panic!("Error on read csv: {err}"));
+    let csv = Csv::new(&cli_params.path_file)?;
 
     match cli_params.action {
-        Some(Action::Filter { condition, limit }) => match csv.filter(&condition) {
-            Ok(filtered_csv) => show::print_table(&csv.headers, &filtered_csv, limit),
-            Err(e) => eprintln!("Err: {e}"),
-        },
+        Some(Action::Filter { condition, limit }) => {
+            let filtered_csv = csv.filter(&condition)?;
+            show::print_table(&csv.headers, &filtered_csv, limit);
+        }
         Some(Action::Show { limit }) => {
             show::print_table(&csv.headers, &csv.lines, limit);
         }
@@ -30,4 +28,6 @@ fn main() {
         }
         None => {}
     }
+
+    Ok(())
 }

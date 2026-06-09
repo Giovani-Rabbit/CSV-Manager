@@ -123,18 +123,23 @@ fn extract_condition(c: &str) -> Result<(String, String, String), String> {
     for op in operators {
         if let Some(idx) = c.find(op) {
             let column = c[..idx].trim().to_string();
-
             if column.is_empty() {
                 return Err(format!("column name is missing in '{c}'"));
             }
 
             let value = c[idx + op.len()..].trim().to_string();
+            if value.is_empty() {
+                return Err(format!("value of operation is missing in '{c}'"));
+            }
 
             return Ok((column, op.to_string(), value));
         }
     }
 
-    Err(format!("no operator found in '{c}', expected ex: age>18"))
+    Err(format!(
+        "No valid operator could be found. Try using {} Ex: 'age>18'",
+        operators.join(" ")
+    ))
 }
 
 #[derive(Debug)]
@@ -177,4 +182,43 @@ fn detect_delimiter(header: &str) -> Result<Delimiter, String> {
         .into_iter()
         .max_by_key(|d| header.chars().filter(|&c| c == d.as_char()).count())
         .ok_or_else(|| format!("could not detect delimiter in '{header}'"))
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::csv::extract_condition;
+
+    #[test]
+    fn test_extrat_condition() {
+        let condition: &str = "amount>20";
+        let (column, condition, value) = extract_condition(condition).unwrap();
+
+        assert_eq!(column, "amount");
+        assert_eq!(condition, ">");
+        assert_eq!(value, "20")
+    }
+
+    #[test]
+    fn test_condition_invalid_operator() {
+        let condition: &str = "amount20";
+        let operators = extract_condition(condition).unwrap_err();
+
+        assert!(operators.contains("No valid operator could be found."));
+    }
+
+    #[test]
+    fn test_condition_column_missing() {
+        let condition: &str = ">20";
+        let operators = extract_condition(condition).unwrap_err();
+
+        assert!(operators.contains("column name is missing in"));
+    }
+
+    #[test]
+    fn test_condition_value_missing() {
+        let condition: &str = "amount>";
+        let operators = extract_condition(condition).unwrap_err();
+
+        assert!(operators.contains("value of operation is missing in"));
+    }
 }

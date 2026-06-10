@@ -68,8 +68,8 @@ impl Csv {
             .lines
             .iter()
             .filter(|line| {
-                if let Some(field) = line.get(column_position) {
-                    compare_values(field, &operator, &value)
+                if let Some(field_value) = line.get(column_position) {
+                    compare_values(field_value, &operator, &value)
                 } else {
                     false
                 }
@@ -81,36 +81,36 @@ impl Csv {
     }
 }
 
-fn compare_values(field: &str, operator: &str, value: &str) -> bool {
+fn compare_values(field_value: &str, operator: &str, value: &str) -> bool {
     match operator {
-        "==" => field.eq_ignore_ascii_case(value),
-        "!=" => !field.eq_ignore_ascii_case(value),
+        "==" => field_value.eq_ignore_ascii_case(value),
+        "!=" => !field_value.eq_ignore_ascii_case(value),
         ">" => {
-            if let (Ok(a), Ok(b)) = (field.parse::<f64>(), value.parse::<f64>()) {
+            if let (Ok(a), Ok(b)) = (field_value.parse::<f64>(), value.parse::<f64>()) {
                 a > b
             } else {
-                field > value
+                field_value > value
             }
         }
         "<" => {
-            if let (Ok(a), Ok(b)) = (field.parse::<f64>(), value.parse::<f64>()) {
+            if let (Ok(a), Ok(b)) = (field_value.parse::<f64>(), value.parse::<f64>()) {
                 a < b
             } else {
-                field < value
+                field_value < value
             }
         }
         ">=" => {
-            if let (Ok(a), Ok(b)) = (field.parse::<f64>(), value.parse::<f64>()) {
+            if let (Ok(a), Ok(b)) = (field_value.parse::<f64>(), value.parse::<f64>()) {
                 a >= b
             } else {
-                field >= value
+                field_value >= value
             }
         }
         "<=" => {
-            if let (Ok(a), Ok(b)) = (field.parse::<f64>(), value.parse::<f64>()) {
+            if let (Ok(a), Ok(b)) = (field_value.parse::<f64>(), value.parse::<f64>()) {
                 a <= b
             } else {
-                field <= value
+                field_value <= value
             }
         }
         _ => false,
@@ -186,7 +186,7 @@ fn detect_delimiter(header: &str) -> Result<Delimiter, String> {
 
 #[cfg(test)]
 mod tests {
-    use crate::csv::extract_condition;
+    use crate::csv::{compare_values, extract_condition};
 
     #[test]
     fn test_extrat_condition() {
@@ -220,5 +220,11 @@ mod tests {
         let operators = extract_condition(condition).unwrap_err();
 
         assert!(operators.contains("value of operation is missing in"));
+    }
+
+    #[test]
+    fn test_compare_values() {
+        let is_field_value_bigger = compare_values("30", ">", "20");
+        assert!(is_field_value_bigger);
     }
 }

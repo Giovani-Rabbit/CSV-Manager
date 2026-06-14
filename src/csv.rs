@@ -185,8 +185,8 @@ fn detect_delimiter(header: &str) -> Result<Delimiter, String> {
 }
 
 #[cfg(test)]
-mod tests {
-    use crate::csv::{compare_values, extract_condition};
+mod test_extract_condition {
+    use crate::csv::extract_condition;
 
     #[test]
     fn test_extrat_condition() {
@@ -221,10 +221,30 @@ mod tests {
 
         assert!(operators.contains("value of operation is missing in"));
     }
+}
+
+#[cfg(test)]
+mod tests_compare_values {
+    use crate::csv::compare_values;
 
     #[test]
-    fn test_compare_values() {
-        let is_field_value_bigger = compare_values("30", ">", "20");
-        assert!(is_field_value_bigger);
+    fn test_compare_numbers() {
+        assert!(compare_values("30", ">", "20"));
+        assert!(!compare_values("30", "==", "20"));
+        assert!(compare_values("30", "==", "30"));
+        assert!(compare_values("30", ">", "20"));
+        assert!(compare_values("20", "<", "40"));
+        assert!(compare_values("40", "<=", "40"));
+        assert!(compare_values("40", ">=", "40"));
+        assert!(compare_values("20", "!=", "40"));
+        assert!(!compare_values("20", "!=", "20"));
+    }
+
+    #[test]
+    fn test_compare_string() {
+        assert!(compare_values("rust", "==", "rust"));
+        assert!(compare_values("RUST", "==", "rust"));
+        assert!(compare_values("rust", "!=", "golang"));
+        assert!(!compare_values("Rust", "!=", "rust"));
     }
 }

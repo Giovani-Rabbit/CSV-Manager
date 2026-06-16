@@ -27,7 +27,7 @@ impl Csv {
         let headers = reader
             .headers()?
             .iter()
-            .map(|col| col.trim().to_string())
+            .map(|col| col.trim().replace("\"", "").to_string())
             .collect();
 
         let lines: Vec<Vec<String>> = reader

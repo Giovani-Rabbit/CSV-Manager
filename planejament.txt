@@ -1,8 +1,3 @@
-1 - Entender como funciona a ferramenta de cli
-2 - Entender como funciona a ferramente de csv
-3 - Planejar oque a aplicacao vai fazer e quais funcoes vai precisar.
-
-
 Projeto:
 
 CLI

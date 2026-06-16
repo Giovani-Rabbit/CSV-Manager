@@ -25,7 +25,7 @@ pub fn json_serialize(csv_mapped: &[Vec<(String, String)>]) -> String {
 
         for record in records {
             let key = add_quotes(&record.0);
-            let value = add_quotes(&record.1);
+            let value = format_value(&record.1);
             object.push(concat_key_value(&key, &value));
         }
 
@@ -33,6 +33,14 @@ pub fn json_serialize(csv_mapped: &[Vec<(String, String)>]) -> String {
     }
 
     format!("[{}]", json.join(", "))
+}
+
+fn format_value(v: &str) -> String {
+    if is_numeric(v) || is_boolean(v) {
+        v.to_string()
+    } else {
+        add_quotes(v)
+    }
 }
 
 fn concat_key_value(key: &str, value: &str) -> String {
@@ -45,4 +53,15 @@ fn add_quotes(v: &str) -> String {
 
 fn add_brackets(v: &str) -> String {
     format!("{{{}}}", v)
+}
+
+fn is_boolean(v: &str) -> bool {
+    matches!(v.to_lowercase().as_str(), "true" | "false")
+}
+
+fn is_numeric(v: &str) -> bool {
+    !v.is_empty()
+        && v.chars()
+            .all(|c| c.is_ascii_digit() || c == '.' || c == ',' || c == '-')
+        && (v.parse::<f64>().is_ok() || v.contains(","))
 }

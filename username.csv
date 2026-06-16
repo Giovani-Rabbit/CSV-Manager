@@ -1,6 +1,6 @@
-Username; Identifier;First name;Last name
-booker12;9012;Rachel;Booker
-grey07;2070;Laura;Grey
-johnson81;4081;Craig;Johnson
-jenkins46;9346;Mary;Jenkins
-smith79;5079;Jamie;Smith
+Username; Identifier;First name;Last name; Price; Is Gamer
+booker12;9012;Rachel;Booker; 19,90; true
+grey07;2070;Laura;Grey; 39.90; True
+johnson81;4081;Craig;Johnson;20.00; True
+jenkins46;9346;Mary;Jenkins; 20; True
+smith79;5079;Jamie;Smith; 99.90; True

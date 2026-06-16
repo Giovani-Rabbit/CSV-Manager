@@ -4,6 +4,8 @@ use std::{
     io::{BufRead, BufReader},
 };
 
+use crate::json::{json_serialize, pair_headers_with_records};
+
 #[derive(Debug, PartialEq)]
 pub struct Csv {
     pub headers: Vec<String>,
@@ -78,6 +80,11 @@ impl Csv {
             .collect();
 
         Ok(result)
+    }
+
+    pub fn to_json(&self) -> String {
+        let mapped_records = pair_headers_with_records(&self.headers, &self.lines);
+        json_serialize(&mapped_records)
     }
 }
 

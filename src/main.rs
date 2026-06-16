@@ -23,8 +23,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             show::print_table(&csv.headers, &csv.lines, limit);
         }
         Some(Action::Export) => {
-            let res: Vec<Vec<(String, String)>> = json::csv_to_json(&csv.headers, &csv.lines);
-            println!("{:?}", res);
+            println!("{}", csv.to_json());
         }
         None => {}
     }

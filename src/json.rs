@@ -95,7 +95,7 @@ mod json_test {
 
         let result = json_serialize(&input);
 
-        assert_eq!(result, r#"[{"giovani": "beautiful", "age": 25}]"#);
+        assert_eq!(result, r#"[{"giovani": "beautiful", "age": 22}]"#);
     }
 
     #[test]

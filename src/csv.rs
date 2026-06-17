@@ -194,66 +194,66 @@ fn detect_delimiter(header: &str) -> Result<Delimiter, String> {
 }
 
 #[cfg(test)]
-mod test_extract_condition {
-    use crate::csv::extract_condition;
+mod tests {
+    use crate::csv::{compare_values, extract_condition};
 
     #[test]
-    fn test_extrat_condition() {
-        let condition: &str = "amount>20";
-        let (column, condition, value) = extract_condition(condition).unwrap();
+    fn should_extract_column_operator_and_value() {
+        let input = "amount>20";
+
+        let (column, operator, value) = extract_condition(input).unwrap();
 
         assert_eq!(column, "amount");
-        assert_eq!(condition, ">");
-        assert_eq!(value, "20")
+        assert_eq!(operator, ">");
+        assert_eq!(value, "20");
     }
 
     #[test]
-    fn test_condition_invalid_operator() {
-        let condition: &str = "amount20";
-        let operators = extract_condition(condition).unwrap_err();
+    fn should_return_error_when_operator_is_missing() {
+        let input = "amount20";
 
-        assert!(operators.contains("No valid operator could be found."));
+        let error = extract_condition(input).unwrap_err();
+
+        assert!(error.contains("No valid operator could be found."));
     }
 
     #[test]
-    fn test_condition_column_missing() {
-        let condition: &str = ">20";
-        let operators = extract_condition(condition).unwrap_err();
+    fn should_return_error_when_column_is_missing() {
+        let input = ">20";
 
-        assert!(operators.contains("column name is missing in"));
+        let error = extract_condition(input).unwrap_err();
+
+        assert!(error.contains("column name is missing"));
     }
 
     #[test]
-    fn test_condition_value_missing() {
-        let condition: &str = "amount>";
-        let operators = extract_condition(condition).unwrap_err();
+    fn should_return_error_when_value_is_missing() {
+        let input = "amount>";
 
-        assert!(operators.contains("value of operation is missing in"));
+        let error = extract_condition(input).unwrap_err();
+
+        assert!(error.contains("value of operation is missing"));
     }
-}
-
-#[cfg(test)]
-mod tests_compare_values {
-    use crate::csv::compare_values;
 
     #[test]
-    fn test_compare_numbers() {
+    fn should_compare_numeric_values_correctly() {
         assert!(compare_values("30", ">", "20"));
-        assert!(!compare_values("30", "==", "20"));
         assert!(compare_values("30", "==", "30"));
-        assert!(compare_values("30", ">", "20"));
         assert!(compare_values("20", "<", "40"));
         assert!(compare_values("40", "<=", "40"));
         assert!(compare_values("40", ">=", "40"));
         assert!(compare_values("20", "!=", "40"));
+
+        assert!(!compare_values("30", "==", "20"));
         assert!(!compare_values("20", "!=", "20"));
     }
 
     #[test]
-    fn test_compare_string() {
+    fn should_compare_strings_case_insensitively() {
         assert!(compare_values("rust", "==", "rust"));
         assert!(compare_values("RUST", "==", "rust"));
         assert!(compare_values("rust", "!=", "golang"));
+
         assert!(!compare_values("Rust", "!=", "rust"));
     }
 }

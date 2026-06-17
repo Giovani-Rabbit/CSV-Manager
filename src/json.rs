@@ -7,8 +7,8 @@ pub fn pair_headers_with_records(
     for record in records {
         let mut line: Vec<(String, String)> = Vec::with_capacity(headers.len());
 
-        for (idx, value) in record.iter().enumerate() {
-            line.push((headers[idx].clone(), value.clone()));
+        for (idx, header) in headers.iter().enumerate() {
+            line.push((header.clone(), record[idx].clone()));
         }
 
         json_map.push(line);

@@ -54,7 +54,7 @@ fn format_line_separetor(spacing: &[usize]) -> String {
 }
 
 fn format_records(spacing: &[usize], records: &[Vec<String>], limit: Option<usize>) -> String {
-    let effective_limit = limit.unwrap_or(records.len());
+    let effective_limit = limit.unwrap_or(20);
     let mut columns: Vec<String> = Vec::with_capacity(effective_limit);
 
     for record in records.iter().take(effective_limit) {

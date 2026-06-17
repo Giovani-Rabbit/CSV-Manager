@@ -27,7 +27,8 @@ impl Csv {
         let headers = reader
             .headers()?
             .iter()
-            .map(|col| col.trim().replace("\"", "").to_string())
+            .map(|col| col.trim().replace("\"", ""))
+            .filter(|col| !col.is_empty())
             .collect();
 
         let lines: Vec<Vec<String>> = reader
@@ -39,6 +40,7 @@ impl Csv {
                 ))
                 .iter()
                 .map(|field| field.trim().to_string())
+                .filter(|field| !field.is_empty())
                 .collect()
             })
             .collect();
